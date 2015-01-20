@@ -6,6 +6,10 @@ var Intances = new Meteor.Collection(collectionName);
 Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 10});
 
 InstanceStatus = {
+	getCollection: function() {
+		return Intances;
+	},
+
 	registerInstance: function(name, extraInformation) {
 		if (InstanceStatus.id() == undefined) {
 			return console.error('[multiple-instances-status] only can be called after Meteor.startup');
