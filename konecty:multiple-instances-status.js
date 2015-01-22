@@ -21,7 +21,7 @@ InstanceStatus = {
 		}
 
 		var now = new Date(),
-			intance = {
+			instance = {
 				_id: InstanceStatus.id(),
 				name: name,
 				_createdAt: now,
@@ -29,11 +29,11 @@ InstanceStatus = {
 			};
 
 		if (extraInformation) {
-			intance.extraInformation = extraInformation;
+			instance.extraInformation = extraInformation;
 		};
 
 		try {
-			result = Intances.insert(intance);
+			result = Intances.insert(instance);
 			InstanceStatus.start();
 
 			process.on('exit', InstanceStatus.onExit);
