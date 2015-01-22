@@ -23,6 +23,7 @@ InstanceStatus = {
 		var now = new Date(),
 			instance = {
 				_id: InstanceStatus.id(),
+				pid: process.pid,
 				name: name,
 				_createdAt: now,
 				_updatedAt: now
