@@ -1,9 +1,9 @@
 var collectionName = process.env.MULTIPLE_INSTANCES_COLLECTION_NAME || 'instances'
-	defaultPingInterval = 5000; // 5s
+	defaultPingInterval = 2000; // 2s
 
 var Intances = new Meteor.Collection(collectionName);
 
-Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 10});
+Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
 
 InstanceStatus = {
 	getCollection: function() {
