@@ -1,4 +1,5 @@
-var collectionName = process.env.MULTIPLE_INSTANCES_COLLECTION_NAME || 'instances'
+var events = new (Npm.require('events').EventEmitter)(),
+	collectionName = process.env.MULTIPLE_INSTANCES_COLLECTION_NAME || 'instances',
 	defaultPingInterval = 2000; // 2s
 
 var Intances = new Meteor.Collection(collectionName);
@@ -9,6 +10,8 @@ InstanceStatus = {
 	name: undefined,
 	extraInformation: undefined,
 
+	events: events,
+
 	getCollection: function() {
 		return Intances;
 	},
@@ -16,6 +19,7 @@ InstanceStatus = {
 	registerInstance: function(name, extraInformation) {
 		InstanceStatus.name = name;
 		InstanceStatus.extraInformation = extraInformation;
+
 		if (InstanceStatus.id() == undefined) {
 			return console.error('[multiple-instances-status] only can be called after Meteor.startup');
 		}
@@ -37,6 +41,8 @@ InstanceStatus = {
 			result = Intances.insert(instance);
 			InstanceStatus.start();
 
+			events.emit('registerInstance', result, instance);
+
 			process.on('exit', InstanceStatus.onExit);
 
 			return result;
@@ -49,6 +55,8 @@ InstanceStatus = {
 		try {
 			result = Intances.remove({_id: InstanceStatus.id()});
 			InstanceStatus.stop();
+
+			events.emit('unregisterInstance', InstanceStatus.id());
 
 			process.removeListener('exit', InstanceStatus.onExit);
 
