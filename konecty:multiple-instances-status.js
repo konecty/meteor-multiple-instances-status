@@ -75,7 +75,11 @@ InstanceStatus = {
 	},
 
 	ping: function() {
-		Intances.update({_id: InstanceStatus.id()}, {$set: {_updatedAt: new Date()}});
+		var count = Intances.update({_id: InstanceStatus.id()}, {$set: {_updatedAt: new Date()}});
+
+		if (count === 0) {
+			InstanceStatus.registerInstance(InstanceStatus.name, InstanceStatus.extraInformation);
+		};
 	},
 
 	onExit: function() {
