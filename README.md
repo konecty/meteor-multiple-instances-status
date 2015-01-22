@@ -2,7 +2,7 @@ This package allows track online app instances.
 
 If you run a project using clustering, you can use all your CPU power but you can't know how many or which instances are online.
 
-With this package all instances will be registered in a collection named *instances* with a *unique id* and each instance will update his record every 5 seconds. The collection will expire all records which that wasn't updated in 10 seconds.
+With this package all instances will be registered in a collection named *instances* with a *unique id* and each instance will update his record every 2 seconds. The collection will expire all records which that wasn't updated in 60 seconds.
 
 Each instance will be unregistered on process exit too.
 
