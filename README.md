@@ -38,7 +38,7 @@ var instanceId = InstanceStatus.id();
 //SERVER
 InstanceStatus.getCollection().find({}).observeChanges({
 	added: function(id) {
-	  console.log('New Instance:', id);
+		console.log('New Instance:', id);
 	},
 	removed: function(id) {
 		console.log('Deleted Instance:', id);
