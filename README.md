@@ -21,6 +21,7 @@ meteor add konecty:user-presence
 
 #### And register your instace with the name you want
 ```javascript
+//SERVER
 Meteor.startup(function() {
 	InstanceStatus.registerInstance('Test');
 });
@@ -28,10 +29,13 @@ Meteor.startup(function() {
 
 #### Get instance id
 ```javascript
+//SERVER
 var instanceId = InstanceStatus.id();
 ```
 
 #### Observer for new and deleted servers
+```javascript
+//SERVER
 InstanceStatus.getCollection().find({}).observeChanges({
 	added: function(id) {
 	  console.log('New Instance:', id);
@@ -40,8 +44,10 @@ InstanceStatus.getCollection().find({}).observeChanges({
 		console.log('Deleted Instance:', id);
 	}
 });
+````
 
 #### Logs
 ```javascript
+//SERVER
 InstanceStatus.activeLogs();
 ```
