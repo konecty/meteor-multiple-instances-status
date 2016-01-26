@@ -5,3 +5,6 @@
 * Fix spelling
 * Register pid with instance information
 * Emit events on registerInstance and unregisterInstance
+
+# 1.0.4 (2016-01-26)
+* Use $currentDate to set correct date into MongoDB
