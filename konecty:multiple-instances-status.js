@@ -20,25 +20,29 @@ InstanceStatus = {
 		InstanceStatus.name = name;
 		InstanceStatus.extraInformation = extraInformation;
 
-		if (InstanceStatus.id() == undefined) {
+		if (InstanceStatus.id() === undefined || InstanceStatus.id() === null) {
 			return console.error('[multiple-instances-status] only can be called after Meteor.startup');
 		}
 
 		var now = new Date(),
 			instance = {
-				_id: InstanceStatus.id(),
-				pid: process.pid,
-				name: name,
-				_createdAt: now,
-				_updatedAt: now
+				$set: {
+					pid: process.pid,
+					name: name
+				},
+				$currentDate: {
+					_createdAt: true,
+					_updatedAt: true
+				}
 			};
 
 		if (extraInformation) {
 			instance.extraInformation = extraInformation;
-		};
+		}
 
 		try {
-			result = Intances.insert(instance);
+			Intances.upsert({_id: InstanceStatus.id()}, instance);
+			var result = Intances.findOne({_id: InstanceStatus.id()});
 			InstanceStatus.start();
 
 			events.emit('registerInstance', result, instance);
@@ -53,7 +57,7 @@ InstanceStatus = {
 
 	unregisterInstance: function() {
 		try {
-			result = Intances.remove({_id: InstanceStatus.id()});
+			var result = Intances.remove({_id: InstanceStatus.id()});
 			InstanceStatus.stop();
 
 			events.emit('unregisterInstance', InstanceStatus.id());
@@ -84,11 +88,19 @@ InstanceStatus = {
 	},
 
 	ping: function() {
-		var count = Intances.update({_id: InstanceStatus.id()}, {$set: {_updatedAt: new Date()}});
+		var count = Intances.update(
+			{
+				_id: InstanceStatus.id()
+			},
+			{
+				$currentDate: {
+					_updatedAt: true
+				}
+			});
 
 		if (count === 0) {
 			InstanceStatus.registerInstance(InstanceStatus.name, InstanceStatus.extraInformation);
-		};
+		}
 	},
 
 	onExit: function() {
