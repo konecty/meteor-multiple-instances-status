@@ -37,7 +37,7 @@ InstanceStatus = {
 			};
 
 		if (extraInformation) {
-			instance.extraInformation = extraInformation;
+			instance.$set.extraInformation = extraInformation;
 		}
 
 		try {
