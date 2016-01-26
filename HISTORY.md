@@ -8,3 +8,6 @@
 
 # 1.0.4 (2016-01-26)
 * Use $currentDate to set correct date into MongoDB
+
+# 1.0.5 (2016-01-26)
+* Fix error introduced by previous commit when extraInformation is setted
