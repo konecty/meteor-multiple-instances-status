@@ -11,3 +11,6 @@
 
 # 1.0.5 (2016-01-26)
 * Fix error introduced by previous commit when extraInformation is setted
+
+# 1.0.6 (2016-01-30)
+* Closes #1; Can't add package on Windows 10
