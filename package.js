@@ -10,13 +10,11 @@ Package.onUse(function(api) {
 
   api.use('nooitaf:colors@0.0.2');
 
-  api.addFiles('konecty:multiple-instances-status.js', ['server']);
+  api.addFiles('multiple-instances-status.js', ['server']);
 
   api.export(['InstanceStatus'], ['server']);
 });
 
 Package.onTest(function(api) {
-  api.use('tinytest');
-  api.use('konecty:multiple-instances-status');
-  api.addFiles('konecty:multiple-instances-status-tests.js');
+
 });
