@@ -16,7 +16,7 @@ When a instance start again we remove all connections when connection id isn't i
 
 #### Add package
 ```shell
-meteor add konecty:multiple-instance-status
+meteor add konecty:multiple-instances-status
 ```
 
 #### And register your instace with the name you want
