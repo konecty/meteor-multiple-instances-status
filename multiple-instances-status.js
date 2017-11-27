@@ -1,6 +1,6 @@
 var events = new (Npm.require('events').EventEmitter)(),
 	collectionName = process.env.MULTIPLE_INSTANCES_COLLECTION_NAME || 'instances',
-	defaultPingInterval = 2000; // 2s
+	defaultPingInterval = (process.env.MULTIPLE_INSTANCES_PING_INTERVAL || 10) * 1000; // default to 10s
 
 var Intances = new Meteor.Collection(collectionName);
 
