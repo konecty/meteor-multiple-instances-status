@@ -4,7 +4,7 @@ var events = new (Npm.require('events').EventEmitter)(),
 
 var Intances = new Meteor.Collection(collectionName);
 
-Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
+Intances.createIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
 
 InstanceStatus = {
 	name: undefined,
