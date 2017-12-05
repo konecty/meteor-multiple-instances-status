@@ -7,7 +7,7 @@ var Instances = new Meteor.Collection(collectionName);
 var InstancesRaw = Instances.rawCollection();
 
 // if not set via env var ensures at least 3 ticks before expiring (multiple of 60s)
-var indexExpire = process.env.MULTIPLE_INSTANCES_EXPIRE || (Math.ceil(defaultPingInterval * 3 / 60) * 60);
+var indexExpire = parseInt(process.env.MULTIPLE_INSTANCES_EXPIRE || (Math.ceil(defaultPingInterval * 3 / 60) * 60));
 
 InstancesRaw.indexes()
 	.catch(function() {
