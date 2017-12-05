@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.0.2.1');
 
+  api.use('random');
   api.use('nooitaf:colors@1.1.2_1');
 
   api.addFiles('multiple-instances-status.js', ['server']);
