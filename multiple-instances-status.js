@@ -1,10 +1,35 @@
 var events = new (Npm.require('events').EventEmitter)(),
 	collectionName = process.env.MULTIPLE_INSTANCES_COLLECTION_NAME || 'instances',
-	defaultPingInterval = 2000; // 2s
+	defaultPingInterval = (process.env.MULTIPLE_INSTANCES_PING_INTERVAL || 10); // default to 10s
 
-var Intances = new Meteor.Collection(collectionName);
+var Instances = new Meteor.Collection(collectionName);
 
-Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
+var InstancesRaw = Instances.rawCollection();
+
+// if not set via env var ensures at least 3 ticks before expiring (multiple of 60s)
+var indexExpire = parseInt(process.env.MULTIPLE_INSTANCES_EXPIRE || (Math.ceil(defaultPingInterval * 3 / 60) * 60));
+
+InstancesRaw.indexes()
+	.catch(function() {
+		// the collection should not exists yet, return empty then
+		return [];
+	})
+	.then(function(result) {
+		return result.some(function(index) {
+			if (index.key && index.key['_updatedAt'] === 1) {
+				if (index.expireAfterSeconds !== indexExpire) {
+					InstancesRaw.dropIndex(index.name);
+					return false;
+				}
+				return true;
+			}
+		})
+	})
+	.then(function(created) {
+		if (!created) {
+			InstancesRaw.createIndex({_updatedAt: 1}, {expireAfterSeconds: indexExpire});
+		}
+	});
 
 InstanceStatus = {
 	name: undefined,
@@ -13,7 +38,7 @@ InstanceStatus = {
 	events: events,
 
 	getCollection: function() {
-		return Intances;
+		return Instances;
 	},
 
 	registerInstance: function(name, extraInformation) {
@@ -41,8 +66,8 @@ InstanceStatus = {
 		}
 
 		try {
-			Intances.upsert({_id: InstanceStatus.id()}, instance);
-			var result = Intances.findOne({_id: InstanceStatus.id()});
+			Instances.upsert({_id: InstanceStatus.id()}, instance);
+			var result = Instances.findOne({_id: InstanceStatus.id()});
 			InstanceStatus.start();
 
 			events.emit('registerInstance', result, instance);
@@ -57,7 +82,7 @@ InstanceStatus = {
 
 	unregisterInstance: function() {
 		try {
-			var result = Intances.remove({_id: InstanceStatus.id()});
+			var result = Instances.remove({_id: InstanceStatus.id()});
 			InstanceStatus.stop();
 
 			events.emit('unregisterInstance', InstanceStatus.id());
@@ -77,7 +102,7 @@ InstanceStatus = {
 
 		InstanceStatus.interval = Meteor.setInterval(function() {
 			InstanceStatus.ping();
-		}, interval);
+		}, interval * 1000);
 	},
 
 	stop: function(interval) {
@@ -88,7 +113,7 @@ InstanceStatus = {
 	},
 
 	ping: function() {
-		var count = Intances.update(
+		var count = Instances.update(
 			{
 				_id: InstanceStatus.id()
 			},
@@ -108,7 +133,7 @@ InstanceStatus = {
 	},
 
 	activeLogs: function() {
-		Intances.find().observe({
+		Instances.find().observe({
 			added: function(record) {
 				var log = '[multiple-instances-status] Server connected: ' + record.name + ' - ' + record._id;
 				if (record._id == InstanceStatus.id()) {
