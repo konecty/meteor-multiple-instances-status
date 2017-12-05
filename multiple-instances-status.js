@@ -4,7 +4,27 @@ var events = new (Npm.require('events').EventEmitter)(),
 
 var Intances = new Meteor.Collection(collectionName);
 
-Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
+var InstancesRaw = Intances.rawCollection();
+var indexExpire = Math.ceil(defaultPingInterval * 3 / 60000) * 60000;
+
+// ensures at least 3 ticks before expiring
+InstancesRaw.indexes()
+	.then(function(result) {
+		return result.some(function(index) {
+			if (index.key && index.key['_updatedAt'] === 1) {
+				if (index.expireAfterSeconds !== indexExpire) {
+					InstancesRaw.dropIndex(index.name);
+					return false;
+				}
+				return true;
+			}
+		})
+	})
+	.then(function(created) {
+		if (!created) {
+			InstancesRaw.createIndex({_updatedAt: 1}, {expireAfterSeconds: indexExpire});
+		}
+	});
 
 InstanceStatus = {
 	name: undefined,
